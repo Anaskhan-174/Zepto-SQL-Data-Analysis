@@ -286,19 +286,16 @@ FROM zepto
 GROUP BY discount_band
 ORDER BY product_count DESC;
 
--- Q18. Which products have the lowest selling price per gram?
+-- Q18. Which products have no discount?
 SELECT
     name,
     category,
-    weightnGrms,
+    mrp,
     discountSellingPrice,
-    ROUND(discountSellingPrice / weightnGrms, 2) AS price_per_gram
+    availableQuantity
 FROM zepto
-WHERE weightnGrms >= 100
-  AND discountSellingPrice > 0
-  AND weightnGrms > 0
-ORDER BY price_per_gram ASC
-LIMIT 20;
+WHERE discountPercent = 0
+ORDER BY mrp DESC;
 
 -- Q19. Which categories have the highest number of available units?
 SELECT
