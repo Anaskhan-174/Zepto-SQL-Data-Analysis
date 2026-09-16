@@ -1,60 +1,60 @@
 # Zepto SQL Data Analysis
 
-SQL-based analysis of a Zepto-style product catalogue to understand **product pricing, discounts, inventory, stock availability, product value, and data quality** using PostgreSQL.
+SQL-based analysis of a Zepto-style product catalogue to understand **product pricing, discounts, inventory, stock availability, product value, and catalogue quality** using PostgreSQL.
 
 ## Project Overview
 
-This project demonstrates how a Data Analyst can transform raw product data into meaningful business insights using SQL.
+This project demonstrates a practical SQL analysis workflow for a quick-commerce product catalogue. The analysis converts raw CSV data into business-focused questions around pricing, discounts, stock levels, inventory value, and product value.
 
-The analysis focuses on questions such as:
+The project is designed around **realistic analyst questions** rather than only demonstrating SQL syntax.
 
-- Which products have the highest discounts?
-- Which categories carry the highest inventory value?
-- Which products have high stock but low discounts?
-- Which categories have higher stock-out rates?
-- Which products provide better value per gram?
-- Are there any pricing or discount inconsistencies in the dataset?
-
-> **Note:** The dataset contains product and inventory information rather than historical sales transactions. Therefore, inventory value calculated using `discountSellingPrice × availableQuantity` is treated as **estimated inventory value / potential sales value**, not actual realized revenue.
+> **Important:** This dataset is a product/inventory snapshot, not historical sales data. Therefore, calculations using `discountSellingPrice × availableQuantity` represent **estimated inventory value / potential sales value**, not actual realized revenue.
 
 ## Business Objectives
 
-The project aims to support decisions around:
+The analysis focuses on:
 
-1. **Pricing & Promotions** – understand discount levels and price differences.
-2. **Inventory Management** – identify high-value, low-stock and out-of-stock products.
-3. **Category Performance** – compare categories by pricing, inventory quantity, value and availability.
-4. **Product Value** – evaluate price per gram and customer-facing discounts.
-5. **Data Quality** – identify invalid prices and inconsistencies between stored and calculated discounts.
+- Understanding product discount strategies
+- Identifying high-value inventory
+- Monitoring stock availability and low-stock products
+- Comparing MRP and selling prices
+- Evaluating product value using price per gram
+- Comparing categories by pricing, discount and inventory metrics
+- Performing basic data-quality checks before analysis
 
 ## Dataset
 
-The repository contains the product catalogue CSV used for the analysis.
+The project uses `zepto_v2.csv`, a product catalogue dataset containing pricing, discount, stock, weight and availability information.
 
-Main fields include:
+### Main Columns
 
 | Column | Description |
 |---|---|
 | `Category` | Product category |
-| `name` | Product name |
+| `name` | Product/SKU name |
 | `mrp` | Maximum Retail Price |
 | `discountPercent` | Listed discount percentage |
 | `availableQuantity` | Available inventory quantity |
-| `discountedSellingPrice` | Selling price after discount in the CSV |
+| `discountedSellingPrice` | Selling price after discount in the source CSV |
 | `weightInGms` | Product weight in grams |
-| `outOfStock` | Stock availability flag |
-| `quantity` | Product quantity field from the source dataset |
+| `outOfStock` | Whether the product is out of stock |
+| `quantity` | Quantity/pack-size field provided in the source dataset |
 
 ### Data Preparation
 
-The SQL table uses standardized analysis column names such as `discountSellingPrice` and `weightnGrms`. The source CSV uses `discountedSellingPrice` and `weightInGms`.
+The source CSV and PostgreSQL table use slightly different column names:
 
-Prices are converted from paise-like values to **Indian Rupees** during data preparation.
+- `discountedSellingPrice` → `discountSellingPrice`
+- `weightInGms` → `weightnGrms`
+
+The source price values are stored in a paise-like format and are converted to **Indian Rupees** during SQL data preparation.
+
+The analysis also checks for NULL values, zero MRP/selling prices, duplicate product names and stock availability before running the main queries.
 
 ## Tools & Technologies
 
-- **PostgreSQL** – data storage and SQL analysis
-- **SQL** – filtering, aggregation, CASE statements, calculations and data validation
+- **PostgreSQL** – database and analysis
+- **SQL** – filtering, aggregation, calculations and business classification
 - **CSV** – source dataset
 
 ## Analysis Workflow
@@ -74,14 +74,14 @@ Pricing Analysis
      ↓
 Product Analysis
      ↓
-Inventory Analysis
+Inventory & Stock Analysis
      ↓
 Business Insights
 ```
 
 ## 20 Business Questions Analysed
 
-### Data Exploration & Cleaning
+### Pricing & Discount Analysis
 
 1. Which are the top 10 products by discount percentage?
 2. Which high-MRP products are currently out of stock?
@@ -89,28 +89,28 @@ Business Insights
 4. Which products have MRP above ₹500 but discount below 10%?
 5. Which 5 categories have the highest average discount percentage?
 6. Which products offer the lowest price per gram?
+
+### Weight & Inventory Analysis
+
 7. How can products be grouped into Low, Medium and Bulk weight categories?
 8. What is the total inventory weight for each category?
-
-### Pricing & Product Analysis
-
 9. Which products have the highest absolute discount amount in ₹?
-10. Which categories have the highest inventory value?
-11. Which categories have the highest average product price?
+10. Which categories have the highest estimated inventory value?
+11. How do average MRP and average selling price compare across categories?
 12. Which products have high stock but relatively low discounts?
 13. Which products have the highest stock value?
+
+### Stock & Product Analysis
+
 14. Which products are out of stock despite having high discounts?
-
-### Inventory & Data Quality Analysis
-
 15. Which categories have the highest out-of-stock rate?
-16. Which products have the largest MRP-to-selling-price difference?
+16. Which products have the largest difference between MRP and selling price?
 17. How are products distributed across discount bands?
-18. Which categories contain the highest number of units in stock?
-19. Which products are currently at low stock levels?
-20. Are there any pricing or discount inconsistencies in the dataset?
+18. Which products have the lowest selling price per gram?
+19. Which categories have the highest number of available units?
+20. Which products are currently at low stock levels?
 
-## Key Analytical Techniques
+## Key SQL Techniques Used
 
 The project uses practical PostgreSQL techniques including:
 
@@ -118,26 +118,35 @@ The project uses practical PostgreSQL techniques including:
 - `GROUP BY` and aggregate functions
 - `COUNT()`, `SUM()`, `AVG()`
 - `ROUND()` for business-friendly metrics
-- `CASE` statements for business classification
+- `CASE` statements for classification
 - `DISTINCT` and `HAVING`
-- `NULLIF()` to prevent division-by-zero issues
 - Boolean filtering for stock analysis
-- Calculated fields such as price per gram, discount amount and inventory value
-- Data validation checks for pricing consistency
+- Calculated fields such as discount amount, price per gram and inventory value
+- Data-quality checks for NULLs, zero prices and duplicate product names
+- Sorting and `LIMIT` for top-product analysis
 
-## Business Insights This Analysis Can Support
+## Business Insights the Analysis Can Support
 
-The analysis can help identify:
+The queries are designed to help identify:
 
-- Categories with significant inventory value exposure
-- Products carrying high inventory value
-- Products with low available stock that may require monitoring
-- Categories with comparatively high stock-out rates
-- Products receiving substantial customer discounts
-- Products that may need pricing or promotional review
-- Potential data-quality issues in pricing and discount fields
+- Categories carrying higher estimated inventory value
+- Products with high stock value and greater inventory exposure
+- Products at low stock levels that may need monitoring
+- Categories with comparatively higher stock-out rates
+- Products receiving larger customer-facing discounts
+- Products with large MRP-to-selling-price gaps
+- Products that provide better price-per-gram value
+- Categories and products that may warrant pricing or promotional review
 
-These insights can be used as a starting point for inventory planning, promotional strategy and catalogue quality checks.
+These findings can support **inventory monitoring, promotional planning, pricing review and catalogue-quality checks**.
+
+## Important Data Limitations
+
+- The dataset is a **catalogue/inventory snapshot**, not a transaction-level sales dataset.
+- `availableQuantity` represents available stock, so it should not be interpreted as units sold.
+- Estimated inventory value is not the same as actual revenue.
+- Repeated product names can represent different SKUs/pack sizes and should not automatically be treated as duplicate transactions.
+- The analysis is descriptive; it does not establish customer demand or causal impact of discounts.
 
 ## Repository Structure
 
@@ -153,7 +162,7 @@ Zepto-SQL-Data-Analysis/
 
 ### 1. Create the table
 
-Open PostgreSQL / pgAdmin and run the `CREATE TABLE` section from:
+Open PostgreSQL / pgAdmin and run the table-creation section from:
 
 ```text
 zepto_SQL_data_analysis.sql
@@ -163,21 +172,22 @@ zepto_SQL_data_analysis.sql
 
 Import `zepto_v2.csv` into the `zepto` table using PostgreSQL / pgAdmin.
 
-Make sure the CSV columns are mapped correctly to the table columns.
+Make sure the CSV columns are mapped to the corresponding PostgreSQL table columns.
 
 ### 3. Run the analysis
 
-Execute the SQL file from top to bottom so that:
+Execute the SQL file from top to bottom. It includes:
 
-- the table is created,
-- data quality is checked,
-- zero-price records are handled,
-- prices are converted to rupees,
-- and the 20 business questions are analysed.
+- table creation
+- initial data exploration
+- NULL and data-quality checks
+- zero-price checks and cleaning
+- price conversion from paise-like values to rupees
+- 20 business-analysis queries
 
 ## Project Outcome
 
-This project demonstrates an end-to-end SQL analysis workflow focused on **business questions rather than only SQL syntax**. It combines data cleaning, exploratory analysis, pricing analysis, inventory analysis and data validation to produce actionable insights from a product catalogue dataset.
+This project demonstrates an end-to-end SQL analysis workflow focused on **business questions, clean SQL logic and practical interpretation**. It covers data exploration, data preparation, pricing analysis, discount analysis, inventory analysis and stock monitoring using PostgreSQL.
 
 ## Author
 
