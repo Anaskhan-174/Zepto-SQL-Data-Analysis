@@ -95,8 +95,8 @@ Business Insights
 7. How can products be grouped into Low, Medium and Bulk weight categories?
 8. What is the total inventory weight for each category?
 9. Which products have the highest absolute discount amount in ₹?
-10. Which categories have the highest estimated inventory value?
-11. How do average MRP and average selling price compare across categories?
+10. Which categories have the highest average available quantity?
+11. What are the average MRP and selling price by category?
 12. Which products have high stock but relatively low discounts?
 13. Which products have the highest stock value?
 
@@ -104,9 +104,9 @@ Business Insights
 
 14. Which products are out of stock despite having high discounts?
 15. Which categories have the highest out-of-stock rate?
-16. Which products have the largest difference between MRP and selling price?
+16. Which products have the largest difference between listed and calculated discount percentage?
 17. How are products distributed across discount bands?
-18. Which products have the lowest selling price per gram?
+18. Which products have no discount?
 19. Which categories have the highest number of available units?
 20. Which products are currently at low stock levels?
 
@@ -121,6 +121,7 @@ The project uses practical PostgreSQL techniques including:
 - `CASE` statements for classification
 - `DISTINCT` and `HAVING`
 - Boolean filtering for stock analysis
+- `ABS()` for discount-difference validation
 - Calculated fields such as discount amount, price per gram and inventory value
 - Data-quality checks for NULLs, zero prices and duplicate product names
 - Sorting and `LIMIT` for top-product analysis
@@ -130,12 +131,13 @@ The project uses practical PostgreSQL techniques including:
 The queries are designed to help identify:
 
 - Categories carrying higher estimated inventory value
+- Categories with higher average available stock
 - Products with high stock value and greater inventory exposure
 - Products at low stock levels that may need monitoring
 - Categories with comparatively higher stock-out rates
 - Products receiving larger customer-facing discounts
-- Products with large MRP-to-selling-price gaps
-- Products that provide better price-per-gram value
+- Products where listed and calculated discounts differ materially
+- Products sold without a discount
 - Categories and products that may warrant pricing or promotional review
 
 These findings can support **inventory monitoring, promotional planning, pricing review and catalogue-quality checks**.
