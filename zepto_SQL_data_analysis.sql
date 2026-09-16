@@ -170,8 +170,8 @@ FROM zepto
 GROUP BY category
 ORDER BY total_inventory_weight_grams DESC;
 
--- Q9: Products with the highest discount amount
-SELECT 
+-- Q9. Which products have the highest discount amount?
+SELECT
     name,
     category,
     mrp,
@@ -183,17 +183,16 @@ WHERE mrp > 0
 ORDER BY discount_amount DESC
 LIMIT 10;
 
--- Q10: Estimated inventory value by category
-SELECT 
+-- Q10. Which categories have the highest average available quantity?
+SELECT
     category,
-    ROUND(SUM(discountSellingPrice * availableQuantity), 2) AS inventory_value
+    ROUND(AVG(availableQuantity), 2) AS average_available_quantity
 FROM zepto
-WHERE discountSellingPrice > 0
 GROUP BY category
-ORDER BY inventory_value DESC;
+ORDER BY average_available_quantity DESC;
 
--- Q11: Average MRP and selling price by category
-SELECT 
+-- Q11. What are the average MRP and selling price by category?
+SELECT
     category,
     ROUND(AVG(mrp), 2) AS average_mrp,
     ROUND(AVG(discountSellingPrice), 2) AS average_selling_price
@@ -202,8 +201,8 @@ WHERE mrp > 0
 GROUP BY category
 ORDER BY average_mrp DESC;
 
--- Q12: Products with high stock and low discount
-SELECT 
+-- Q12. Which products have high stock and low discount?
+SELECT
     name,
     category,
     availableQuantity,
@@ -214,8 +213,8 @@ WHERE availableQuantity >= 10
   AND discountPercent < 10
 ORDER BY availableQuantity DESC;
 
--- Q13: Products with the highest stock value
-SELECT 
+-- Q13. Which products have the highest stock value?
+SELECT
     name,
     category,
     availableQuantity,
@@ -227,8 +226,8 @@ WHERE availableQuantity > 0
 ORDER BY stock_value DESC
 LIMIT 20;
 
--- Q14: Out-of-stock products with high discounts
-SELECT 
+-- Q14. Which products are out of stock despite having high discounts?
+SELECT
     name,
     category,
     mrp,
@@ -240,8 +239,8 @@ WHERE outOfStock = TRUE
   AND discountPercent >= 20
 ORDER BY discountPercent DESC;
 
--- Q15: Out-of-stock rate by category
-SELECT 
+-- Q15. Which categories have the highest out-of-stock rate?
+SELECT
     category,
     COUNT(*) AS total_products,
     SUM(CASE WHEN outOfStock = TRUE THEN 1 ELSE 0 END) AS out_of_stock_products,
@@ -253,21 +252,27 @@ FROM zepto
 GROUP BY category
 ORDER BY out_of_stock_rate DESC;
 
--- Q16: Products with the largest difference between MRP and selling price
-SELECT 
+-- Q16. Which products have the largest difference between listed and calculated discount percentage?
+SELECT
     name,
     category,
     mrp,
     discountSellingPrice,
-    ROUND(mrp - discountSellingPrice, 2) AS price_difference,
-    discountPercent
+    discountPercent AS listed_discount_percent,
+    ROUND(((mrp - discountSellingPrice) / mrp) * 100, 2) AS calculated_discount_percent,
+    ROUND(
+        ABS(
+            ((mrp - discountSellingPrice) / mrp) * 100 - discountPercent
+        ),
+        2
+    ) AS discount_difference
 FROM zepto
 WHERE mrp > 0
   AND discountSellingPrice > 0
-ORDER BY price_difference DESC
+ORDER BY discount_difference DESC
 LIMIT 20;
 
--- Q17: Distribution of products across discount bands
+-- Q17. How are products distributed across discount bands?
 SELECT
     CASE
         WHEN discountPercent = 0 THEN 'No Discount'
@@ -281,8 +286,8 @@ FROM zepto
 GROUP BY discount_band
 ORDER BY product_count DESC;
 
--- Q18: Products with the lowest selling price per gram
-SELECT 
+-- Q18. Which products have the lowest selling price per gram?
+SELECT
     name,
     category,
     weightnGrms,
@@ -295,16 +300,16 @@ WHERE weightnGrms >= 100
 ORDER BY price_per_gram ASC
 LIMIT 20;
 
--- Q19: Total available units by category
-SELECT 
+-- Q19. Which categories have the highest number of available units?
+SELECT
     category,
     SUM(availableQuantity) AS total_units_in_stock
 FROM zepto
 GROUP BY category
 ORDER BY total_units_in_stock DESC;
 
--- Q20: Products with low available stock
-SELECT 
+-- Q20. Which products are currently at low stock levels?
+SELECT
     name,
     category,
     availableQuantity,
