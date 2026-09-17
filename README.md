@@ -26,6 +26,13 @@ The analysis focuses on:
 
 The project uses `zepto_v2.csv`, a product catalogue dataset containing pricing, discount, stock, weight and availability information.
 
+### Dataset Summary
+
+- **Rows:** 3,732
+- **Categories:** 14
+- **Out-of-stock rows:** 453
+- **Average listed discount:** 7.62%
+
 ### Main Columns
 
 | Column | Description |
@@ -110,6 +117,45 @@ Business Insights
 19. Which categories have the highest number of available units?
 20. Which products are currently at low stock levels?
 
+## Key Verified Results
+
+The full verified result summary is available in [`zepto_analysis_results.md`](zepto_analysis_results.md).
+
+### Pricing & Discount
+
+- Highest listed discount: **51%**, seen on three Dukes Waffy products.
+- Highest average category discount: **Fruits & Vegetables — 15.46%**.
+- **1,178 rows** have no discount, while **206 rows** fall into High or Very High discount bands.
+- Highest absolute discount amount: **₹1,201** on Borges Extra Light Olive Oil Bottle.
+- Largest listed-vs-calculated discount difference: approximately **0.99 percentage points**.
+
+### Inventory & Stock
+
+- Highest estimated inventory value: **₹337,369**, for both Cooking Essentials and Munchies.
+- Highest available units: **2,186**, for both Cooking Essentials and Munchies.
+- Highest out-of-stock rate: **Biscuits — 28.57% (42 of 147 rows)**.
+- **897 rows** have low available stock of 1–3 units.
+- **21 product-category rows** are out of stock despite having discounts of at least 20%.
+- The high-stock/low-discount query returned **0 rows** under the defined rule (available quantity ≥10 and discount <10%).
+
+### Pricing & Product Value
+
+- Highest average MRP: **₹207.12** in Paan Corner and Personal Care.
+- Lowest calculated price-per-gram results are approximately **₹0.02/g** among products weighing at least 100g.
+
+## Business Insights
+
+The analysis highlights several practical areas an analyst could monitor:
+
+1. **Discount concentration:** Most products are in the No Discount, Low Discount or Medium Discount bands, while very high discounts are relatively uncommon.
+2. **Category promotion differences:** Fruits & Vegetables has the highest average listed discount, indicating a comparatively stronger promotional pattern in this snapshot.
+3. **Inventory exposure:** Cooking Essentials and Munchies have the highest estimated inventory value and total available units, so inventory monitoring in these categories can be important.
+4. **Availability risk:** Biscuits has the highest out-of-stock rate, while 897 rows are already in the low-stock range.
+5. **Promotion vs availability:** Some heavily discounted products are still out of stock, showing that discounting alone does not guarantee availability.
+6. **Pricing-data quality:** Listed and calculated discounts differ by less than one percentage point in the largest top result, suggesting small rounding/data-entry differences rather than large discrepancies.
+
+These findings can support **inventory monitoring, promotional planning, pricing review and catalogue-quality checks**.
+
 ## Key SQL Techniques Used
 
 The project uses practical PostgreSQL techniques including:
@@ -126,22 +172,6 @@ The project uses practical PostgreSQL techniques including:
 - Data-quality checks for NULLs, zero prices and duplicate product names
 - Sorting and `LIMIT` for top-product analysis
 
-## Business Insights the Analysis Can Support
-
-The queries are designed to help identify:
-
-- Categories carrying higher estimated inventory value
-- Categories with higher average available stock
-- Products with high stock value and greater inventory exposure
-- Products at low stock levels that may need monitoring
-- Categories with comparatively higher stock-out rates
-- Products receiving larger customer-facing discounts
-- Products where listed and calculated discounts differ materially
-- Products sold without a discount
-- Categories and products that may warrant pricing or promotional review
-
-These findings can support **inventory monitoring, promotional planning, pricing review and catalogue-quality checks**.
-
 ## Important Data Limitations
 
 - The dataset is a **catalogue/inventory snapshot**, not a transaction-level sales dataset.
@@ -157,6 +187,7 @@ Zepto-SQL-Data-Analysis/
 │
 ├── README.md
 ├── zepto_SQL_data_analysis.sql
+├── zepto_analysis_results.md
 └── zepto_v2.csv
 ```
 
